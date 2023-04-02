@@ -24,8 +24,6 @@ We used the Chess.com API data to construct our game outcome prediction model. W
 
 **Data Engineering Pipeline**
 
-![](Aspose.Words.90c19c53-d426-4a1e-a329-8e6ccc57c9ea.001.jpeg)
-
 This data pipeline uses Python scripts to fetch data from Lichess and Chess.com APIs and store them in Google Cloud Platform (GCP) buckets. Then, Spark is used to process the data from GCP and store it in a MongoDB database. The entire process is orchestrated using Airflow, which provides a platform for managing the various steps of the pipeline and scheduling the execution of the scripts. To accomplish our machine learning goals, we utilize a Databricks cluster where we retrieve the data stored in MongoDB and employ SparkMLib for modeling.
 
 **Preprocessing**
@@ -45,45 +43,45 @@ Our cluster configuration was as follows:
 - Driver: 30.5 GB Memory, 4 Cores
 - Number of Workers: 2-5
 
-|Cluster configuration (with GPU):|
-| - |
-|- Databricks Runtime Version: 12.1 ML (includes Apache Spark 3.3.1, GPU, Scala 2.12)|
-|- Workers: 32-80 GB Memory, 8-20 Cores|
-|- Driver: 16 GB Memory, 4 Cores|
-|- Number of Workers: 2-5|
-||
+Cluster configuration (with GPU):
+- Databricks Runtime Version: 12.1 ML (includes Apache Spark 3.3.1, GPU, Scala 2.12)
+- Workers: 32-80 GB Memory, 8-20 Cores
+- Driver: 16 GB Memory, 4 Cores
+- Number of Workers: 2-5
+
+
 **ML Goals**
 
 All the relevant features, post-processing, were transformed into a single column using
 ‘VectorAssembler’. The resulting dataframe was split into train and test (0.8/0.7 train and 0.2/0.3
 test) before training the models using SparkMLib.
 
-Our overarching machine learning goal was to create a score prediction algorithm that|
-surpasses the traditional Elo in both performance and flexibility. In order to do this, we explored|
-a wide variety of machine learning models:|
-1\. Decision Trees|
-2\. Random Forests|
-3\. Logistic Regression|
-4\. Support Vector Machines|
-5\. Gradient-Boosted Trees|
-6\. Naive Bayes Classifier|
+Our overarching machine learning goal was to create a score prediction algorithm that
+surpasses the traditional Elo in both performance and flexibility. In order to do this, we explored
+a wide variety of machine learning models:
+1. Decision Trees
+2. Random Forests
+3. Logistic Regression
+4. Support Vector Machines
+5. Gradient-Boosted Trees
+6. Naive Bayes Classifier
 
-We implemented these models and compared their ability to predict the outcome of a|
-game with that of the Elo system. Most of the models were tuned and cross validated using|
-‘ParamGridBuilder()’ and ‘CrossValidator()’ respectively. Finally, the model was evaluated using|
-‘BinaryClassificationEvaluator()’.|
+We implemented these models and compared their ability to predict the outcome of a
+game with that of the Elo system. Most of the models were tuned and cross validated using
+‘ParamGridBuilder()’ and ‘CrossValidator()’ respectively. Finally, the model was evaluated using
+‘BinaryClassificationEvaluator()’.
 
-**Outcomes**|
-Below are the metrics that we obtain with the ELO Formula (Benchmark) :-|
+**Outcomes**
+
+Below are the metrics that we obtain with the ELO Formula (Benchmark):
 
 |**Model**|**Accuracy**|**AUC**|**PR**|
+| - | - | - | - |
 |**Elo Formula Prediction (Benchmark)**|**70.03%**|**0.7029**|**0.6678**|
-||
+
 The first notable result here is that Elo actually is quite good at predicting chess outcomes by itself. Chess can be an unpredictable and volatile game, and the quality of a player on any given day is affected by hundreds of variables that cannot realistically be modeled. Taking that into account, Elo attained an accuracy of 70%, AUC of .7, and a PR of .67. Not bad! In fact, the best accuracy obtained by our massive ensemble of models was only 2.11 percentage points better than Elo.
 
-Below are the metrics that we obtain from ML models:-
-
-
+Below are the metrics that we obtain from ML models:
 
 |**Model**|**Features**|**Accuracy**|**AUC**|**PR**|
 | - | - | - | - | - |
@@ -105,15 +103,12 @@ Below are the metrics that we obtain from ML models:-
 |Gradient Boosted Trees|"Black Elo", "White Elo","elo\_diff", "Time Class", "Time Control"|64\.85%|0\.7605|0\.7853|
 ||"Black Elo", "White Elo"|70\.00%|0\.7687|0\.7722|
 ||"elo\_diff"|**71.89%**|0\.7811|0\.7921|
-The machine learning models truly start to differentiate themselves when we consider the metrics of AUC and PR. Our best model AUC was nearly .1 better than the AUC of Elo, which is massive for a metric that is essentially bounded between .5 and 1. It was a similar story
 
-for PR. Effectively, this means that our models did a better job avoiding false positives/negatives than Elo did. In this particular case, it appears that Elo overpredicted the amount of wins that the white player would get, leading to its AUC and PR to be worse than its accuracy.
+The machine learning models truly start to differentiate themselves when we consider the metrics of AUC and PR. Our best model AUC was nearly .1 better than the AUC of Elo, which is massive for a metric that is essentially bounded between .5 and 1. It was a similar story for PR. Effectively, this means that our models did a better job avoiding false positives/negatives than Elo did. In this particular case, it appears that Elo overpredicted the amount of wins that the white player would get, leading to its AUC and PR to be worse than its accuracy.
 
 Another very interesting result is that adding additional features to our model beyond Elo did not help their prediction quality, and in fact harmed it. We hypothesized that knowing the time limit of a game would help add valuable information to our model. However, it appears that this only added noise to our models.
 
 **Runtime Efficiency**
-
-
 
 |**Machine Learning Algorithm**|**Average Model Runtime (Regular cluster)**|**Average Model Runtime (GPU)**|
 | - | :-: | :-: |
@@ -123,13 +118,12 @@ Another very interesting result is that adding additional features to our model 
 |Support Vector Machine|**20.67 seconds**|1\.06 minutes|
 |Gradient Boosting|15\.8 minutes|**10.67 minutes**|
 |Naive Bayes|**2.46 seconds**|52\.24 seconds|
+
 Weirdly enough, we observe that, on an average, the model runtimes are faster on the cluster with no GPU. On a model level, RandomForest, GradientBoosting and Logistic Regression have a faster execution time on the cluster with GPU. One possible explanation for this could be the fact that all of us were trying to test the runtime efficiency together which might have increased the overhead for the cluster which added to the latency of the overall compute time.
 
 **Lessons Learned**
 
-One very important lesson we all learned is that modeling chess outcomes is **hard**. We had a lot of ideas about using tons of different features in our models, but the reality is that most
-
-variables besides past win/loss history will be useless in predicting outcomes. This is what Elo effectively models already.
+One very important lesson we all learned is that modeling chess outcomes is **hard**. We had a lot of ideas about using tons of different features in our models, but the reality is that most variables besides past win/loss history will be useless in predicting outcomes. This is what Elo effectively models already.
 
 As we have demonstrated, there is room to improve upon Elo, but the opportunities are more limited than we first expected.
 
