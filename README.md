@@ -1,8 +1,8 @@
 # **Predicting Chess Match Outcomes Using Machine Learning**
 
-Group\_Project\_22
+## Group\_Project\_22
 
-Harsh Praharaj, Javier Pacheco, Aydin Schwartz, Kevin Kimmel, Alex Bradshaw
+## Harsh Praharaj, Javier Pacheco, Aydin Schwartz, Kevin Kimmel, Alex Bradshaw
 
 **Problem/Motivation Statement**
 
