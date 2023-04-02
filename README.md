@@ -52,30 +52,30 @@ Our cluster configuration was as follows:
 |- Driver: 16 GB Memory, 4 Cores|
 |- Number of Workers: 2-5|
 ||
-|**ML Goals**|
-||
-|All the relevant features, post-processing, were transformed into a single column using|
-|‘VectorAssembler’. The resulting dataframe was split into train and test (0.8/0.7 train and 0.2/0.3|
-|test) before training the models using SparkMLib.|
-||
-|Our overarching machine learning goal was to create a score prediction algorithm that|
-|surpasses the traditional Elo in both performance and flexibility. In order to do this, we explored|
-|a wide variety of machine learning models:|
-|1\. Decision Trees|
-|2\. Random Forests|
-|3\. Logistic Regression|
-|4\. Support Vector Machines|
-|5\. Gradient-Boosted Trees|
-|6\. Naive Bayes Classifier|
-||
-|We implemented these models and compared their ability to predict the outcome of a|
-|game with that of the Elo system. Most of the models were tuned and cross validated using|
-|‘ParamGridBuilder()’ and ‘CrossValidator()’ respectively. Finally, the model was evaluated using|
-|‘BinaryClassificationEvaluator()’.|
-||
-|**Outcomes**|
-|Below are the metrics that we obtain with the ELO Formula (Benchmark) :-|
-||
+**ML Goals**
+
+All the relevant features, post-processing, were transformed into a single column using
+‘VectorAssembler’. The resulting dataframe was split into train and test (0.8/0.7 train and 0.2/0.3
+test) before training the models using SparkMLib.
+
+Our overarching machine learning goal was to create a score prediction algorithm that|
+surpasses the traditional Elo in both performance and flexibility. In order to do this, we explored|
+a wide variety of machine learning models:|
+1\. Decision Trees|
+2\. Random Forests|
+3\. Logistic Regression|
+4\. Support Vector Machines|
+5\. Gradient-Boosted Trees|
+6\. Naive Bayes Classifier|
+
+We implemented these models and compared their ability to predict the outcome of a|
+game with that of the Elo system. Most of the models were tuned and cross validated using|
+‘ParamGridBuilder()’ and ‘CrossValidator()’ respectively. Finally, the model was evaluated using|
+‘BinaryClassificationEvaluator()’.|
+
+**Outcomes**|
+Below are the metrics that we obtain with the ELO Formula (Benchmark) :-|
+
 |**Model**|**Accuracy**|**AUC**|**PR**|
 |**Elo Formula Prediction (Benchmark)**|**70.03%**|**0.7029**|**0.6678**|
 ||
